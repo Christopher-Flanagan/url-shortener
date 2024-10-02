@@ -13,7 +13,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Check if test-names.txt is not empty
+      - name: Debug file structure
+        run: |
+          echo "Listing files in the .github/test-lists directory:"
+          ls -al .github/tests/
+      - name: Check if test file is not empty
         run: |
           if [ ! -s .github/tests/functional-test.txt ]; then
             echo "Error: test-names.txt is empty."
