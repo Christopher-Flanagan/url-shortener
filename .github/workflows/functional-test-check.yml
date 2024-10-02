@@ -1,0 +1,60 @@
+name: Run Tests and Check for Specific Test Names
+
+on:
+  push:
+    branches:
+      - develop
+  pull_request:
+    branches:
+      - develop
+
+jobs:
+  run-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3  # Updated to use checkout@v3
+      - name: Set up JDK
+        uses: actions/setup-java@v3  # Updated to setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '21'      # Adjust Java version if necessary
+      - name: Read StartNode json
+        id: package
+        uses: juliangruber/read-file-action@v1
+        with:
+          path: ./functional-test.json
+      - name: Echo po_NODE_START_PROCEDURE_V2.json
+        run: echo "${{ steps.package.outputs.content }}"
+
+      - name: Cache Maven dependencies
+        uses: actions/cache@v3  # Updated to use cache@v3
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven
+
+      - name: Run Maven Tests
+        run: mvn test --batch-mode --fail-at-end
+        if: always()  # This will ensure that the step runs even if previous steps failed
+
+      - name: Check for test names in the list
+        id: check-tests
+        run: |
+          # Read the list of test names from the file in .github/tests/
+          while IFS= read -r test_name; do
+            # Use awk for exact string match
+            if awk "/^$test_name$/" target/surefire-reports/*.txt > /dev/null; then
+              echo "$test_name was found."
+            else
+              echo "Error: $test_name was not found."
+              exit 1
+            fi
+          done < .github/tests/functional-test.txt
+        continue-on-error: false  # Ensure it fails if any test names aren't found
+
+      - name: Notify success
+        if: ${{ success() }}  # Run only if all tests passed
+        run: echo "All tests in the list were found."
