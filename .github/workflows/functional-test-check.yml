@@ -24,7 +24,7 @@ jobs:
         id: package
         uses: juliangruber/read-file-action@v1
         with:
-          path: ./tests/functional-test.json
+          path: ./functional-test.json
       - name: Echo po_NODE_START_PROCEDURE_V2.json
         run: echo "${{ steps.package.outputs.content }}"
 
