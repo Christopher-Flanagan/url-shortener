@@ -13,24 +13,20 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Debug file structure
-        run: |
-          echo "Listing files in the .github/test-lists directory:"
-          ls -al .github/tests/
-      - name: Check if test file is not empty
-        run: |
-          if [ ! -s .github/tests/functional-test.txt ]; then
-            echo "Error: test-names.txt is empty."
-            exit 1
-          fi
       - name: Checkout code
         uses: actions/checkout@v3  # Updated to use checkout@v3
-
       - name: Set up JDK
         uses: actions/setup-java@v3  # Updated to setup-java@v3
         with:
           distribution: 'temurin'
-          java-version: '17'      # Adjust Java version if necessary
+          java-version: '21'      # Adjust Java version if necessary
+      - name: Read StartNode json
+        id: package
+        uses: juliangruber/read-file-action@v1
+        with:
+          path: ./tests/functional-test.json
+      - name: Echo po_NODE_START_PROCEDURE_V2.json
+        run: echo "${{ steps.package.outputs.content }}"
 
       - name: Cache Maven dependencies
         uses: actions/cache@v3  # Updated to use cache@v3
