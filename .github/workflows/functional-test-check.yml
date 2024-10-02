@@ -45,7 +45,7 @@ jobs:
               echo "Error: $test_name was not found."
               exit 1
             fi
-          done < .github/test-lists/functional-test.txt
+          done < .github/tests/functional-test.txt
 
       - name: Notify success
         if: ${{ success() }}
