@@ -20,7 +20,7 @@ jobs:
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
-          java-version: '17'      # Adjust Java version if necessary
+          java-version: '21'      # Adjust Java version if necessary
 
       - name: Cache Maven dependencies
         uses: actions/cache@v2
