@@ -1,0 +1,3 @@
+features:
+  encoder-url:
+    base-url: https:localhost:9000
