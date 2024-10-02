@@ -1,0 +1,52 @@
+name: Run Tests and Check for Specific Test Names
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  run-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'      # Adjust Java version if necessary
+
+      - name: Cache Maven dependencies
+        uses: actions/cache@v2
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-maven
+
+      - name: Run Maven Tests
+        run: mvn test --batch-mode --fail-at-end
+        continue-on-error: true  # Continue to the next step even if tests fail
+
+      - name: Check for test names in the list
+        id: check-tests
+        run: |
+          # Read the list of test names from the file in .github/tests/
+          while IFS= read -r test_name; do
+            # Check if each test is present in the test report
+            if grep -q "$test_name" target/surefire-reports/*.txt; then
+              echo "$test_name was found."
+            else
+              echo "Error: $test_name was not found."
+              exit 1
+            fi
+          done < .github/test-lists/functional-test.txt
+
+      - name: Notify success
+        if: ${{ success() }}
+        run: echo "All tests in the list were found."
