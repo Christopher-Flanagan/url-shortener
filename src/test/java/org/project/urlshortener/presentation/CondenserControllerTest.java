@@ -21,7 +21,7 @@ public class CondenserControllerTest {
 
 
     @Test
-    @DisplayName("Controller test")
+    @DisplayName("Random")
     public void shortenUrlTest() {
         when(service.shortenUrl(any())).thenReturn("Short");
         var result = controller.shortenUrl("");
