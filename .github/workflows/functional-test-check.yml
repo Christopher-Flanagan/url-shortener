@@ -3,10 +3,10 @@ name: Run Tests and Check for Specific Test Names
 on:
   push:
     branches:
-      - main
+      - develop
   pull_request:
     branches:
-      - main
+      - develop
 
 jobs:
   run-tests:
