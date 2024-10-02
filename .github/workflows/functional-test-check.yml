@@ -39,7 +39,7 @@ jobs:
           # Read the list of test names from the file in .github/tests/
           while IFS= read -r test_name; do
             # Check if each test is present in the test report
-            if grep -q "$test_name" target/surefire-reports/*.txt; then
+            if grep -qw "$test_name" target/surefire-reports/*.txt; then
               echo "$test_name was found."
             else
               echo "Error: $test_name was not found."
